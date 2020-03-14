@@ -17,7 +17,7 @@ program
 	.usage('[arguments]')
 	.option('--pause', 'Pause the player')
 	.option('--play', 'Play the player')
-	.option('--playPause', 'Toggle play / pause')
+	.option('--play-pause', 'Toggle play / pause')
 	.option('--stop', 'Stop the player')
 	.option('--volume-up', 'Increase the volume (set --volume-step to control the percentage)')
 	.option('--volume-down', 'Decrease the volume (set --volume-step to control the percentage)')
@@ -40,6 +40,7 @@ program
 	.option('--seek-speed <2|4|8|16|32>', 'Multiplier when using rewind / fast-fowards', '2')
 	.option('--host <address>', 'Set the hostname to use')
 	.option('--port <port>', 'Set the port to use', 8080)
+	.option('--ping', 'State if the player is contactable')
 	.option('-v, --verbose', 'Be verbose, specify multiple times for more verbosity', (t, v) => v++, 0)
 	.note('The INI file ~/.kodi-cmd can populate "host", "port", "seekSpeed", "volumeStep" and "verbose" options')
 	.parse(process.argv)
@@ -104,7 +105,11 @@ return Promise.resolve()
 		// BUGFIX: Hacky work around to handle weird responses from upstream when host is invalid - see https://github.com/CMP2804M-Group3/kodi-controller/issues/86
 		var domain = require('domain').create();
 		domain.on('error', e => reject(`Unable to connect to Kodi player @ "${program.host}:${program.port}"`));
-		domain.run(()=> kodi.getActivePlayerID())
+		domain.run(()=> {
+			kodi.getActivePlayerID()
+				.then(()=> program.ping && console.log('Host is contactable'))
+				.then(()=> resolve())
+		})
 	}))
 	// }}}
 	// Perform commands {{{

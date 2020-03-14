@@ -32,7 +32,7 @@ Options:
   -V, --version               output the version number
   --pause                     Pause the player
   --play                      Play the player
-  --playPause                 Toggle play / pause
+  --play-pause                Toggle play / pause
   --stop                      Stop the player
   --volume-up                 Increase the volume (set --volume-step to control
                               the percentage)
@@ -61,6 +61,7 @@ Options:
                               (default: "2")
   --host <address>            Set the hostname to use
   --port <port>               Set the port to use (default: 8080)
+  --ping                      State if the player is contactable
   -v, --verbose               Be verbose, specify multiple times for more
                               verbosity
   -h, --help                  display help for command
