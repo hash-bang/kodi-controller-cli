@@ -7,7 +7,6 @@ var ini = require('ini');
 var os = require('os');
 var program = require('commander');
 require('commander-extras');
-var promisify = require('util').promisify;
 
 var kodi; // Will be populated by the active kodi-controller when it loads
 
@@ -80,24 +79,21 @@ return Promise.resolve()
 	// }}}
 	// Promisify the controller {{{
 	.then(()=> {
-		// Regular callback order
+		// Make a promise container
+		kodi.promises = {};
+
 		[
 			'getActivePlayerID',
 			'pause', 'play', 'playPause', 'stop',
+			'volumeDown', 'volumeUp', 'setVolume',
+			'rewind', 'fastForward',
 			'contextMenu', 'select',
 			'goBack', 'goHome', 'goNext', 'goPrevious',
 			'goUp', 'goDown', 'goLeft', 'goRight',
 			'toggleFullscreen', 'toggleMute', 'toggleShuffle',
-		].forEach(k => kodi[k] = promisify(kodi[k]))
-
-		// Deal with the somewhat odd order of callbacks for some commands
-		// BUGFIX: Not yet supported - see https://github.com/CMP2804M-Group3/kodi-controller/issues/85
-		/*
-		['volumeDown', 'volumeUp', 'rewind', 'fastForward', 'setVolume']
-			.forEach(k => kodi[k] = new Promise((resolve, reject) =>
-				kodi[k].bind(this, (err, val) => err ? reject(err) : resolve(val))
-			))
-		*/
+		].forEach(k => kodi.promises[k] = (...args) => new Promise((resolve, reject) =>
+			kodi[k].call(kodi, (err, val) => err ? reject(err) : resolve(val), ...args) // Callback is always first
+		))
 	})
 	// }}}
 	// Check connection is valid {{{
@@ -106,7 +102,7 @@ return Promise.resolve()
 		var domain = require('domain').create();
 		domain.on('error', e => reject(`Unable to connect to Kodi player @ "${program.host}:${program.port}"`));
 		domain.run(()=> {
-			kodi.getActivePlayerID()
+			kodi.promises.getActivePlayerID()
 				.then(()=> program.ping && console.log('Host is contactable'))
 				.then(()=> resolve())
 		})
@@ -114,27 +110,27 @@ return Promise.resolve()
 	// }}}
 	// Perform commands {{{
 	.then(()=> Promise.all([
-		program.pause && kodi.pause(),
-		program.play && kodi.play(),
-		program.playPause && kodi.playPause(),
-		program.stop && kodi.stop(),
-		program.volumeDown && kodi.volumeDown(program.volumeStep),
-		program.volumeUp && kodi.volumeDown(program.volumeStep),
-		program.fastForward && kodi.fastForward(),
-		program.rewind && kodi.rewind(),
-		program.contextMenu && kodi.contextMenu(),
-		program.select && kodi.select(),
-		program.back && kodi.goBack(),
-		program.home && kodi.goHome(),
-		program.next && kodi.goNext(),
-		program.previous && kodi.goPrevious(),
-		program.moveUp && kodi.goUp(),
-		program.moveDown && kodi.goDown(),
-		program.moveLeft && kodi.goLeft(),
-		program.moveRight && kodi.goRight(),
-		program.toggleFullScreen && kodi.toggleFullscreen(),
-		program.toggleMute && kodi.toggleMute(),
-		program.toggleShuffle && kodi.toggleShuffle(),
+		program.pause && kodi.promises.pause(),
+		program.play && kodi.promises.play(),
+		program.playPause && kodi.promises.playPause(),
+		program.stop && kodi.promises.stop(),
+		program.volumeDown && kodi.promises.volumeDown(program.volumeStep),
+		program.volumeUp && kodi.promises.volumeDown(program.volumeStep),
+		program.fastForward && kodi.promises.fastForward(),
+		program.rewind && kodi.promises.rewind(),
+		program.contextMenu && kodi.promises.contextMenu(),
+		program.select && kodi.promises.select(),
+		program.back && kodi.promises.goBack(),
+		program.home && kodi.promises.goHome(),
+		program.next && kodi.promises.goNext(),
+		program.previous && kodi.promises.goPrevious(),
+		program.moveUp && kodi.promises.goUp(),
+		program.moveDown && kodi.promises.goDown(),
+		program.moveLeft && kodi.promises.goLeft(),
+		program.moveRight && kodi.promises.goRight(),
+		program.toggleFullScreen && kodi.promises.toggleFullscreen(),
+		program.toggleMute && kodi.promises.toggleMute(),
+		program.toggleShuffle && kodi.promises.toggleShuffle(),
 	]))
 	.then(()=> program.verbose && console.log('Done'))
 	.catch(e => {
