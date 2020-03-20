@@ -2,7 +2,7 @@ kodi-controller-cli
 ===================
 Control Kodi from the command line.
 
-This project is a command line wrapper for the [kodi-controller](https://github.com/CMP2804M-Group3/kodi-controller) module.
+This project is a command line wrapper for the excellent [kodi-controller](https://github.com/CMP2804M-Group3/kodi-controller) module.
 
 **Features**:
 

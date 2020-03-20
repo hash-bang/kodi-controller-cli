@@ -115,7 +115,7 @@ return Promise.resolve()
 		program.playPause && kodi.promises.playPause(),
 		program.stop && kodi.promises.stop(),
 		program.volumeDown && kodi.promises.volumeDown(program.volumeStep),
-		program.volumeUp && kodi.promises.volumeDown(program.volumeStep),
+		program.volumeUp && kodi.promises.volumeUp(program.volumeStep),
 		program.fastForward && kodi.promises.fastForward(),
 		program.rewind && kodi.promises.rewind(),
 		program.contextMenu && kodi.promises.contextMenu(),
