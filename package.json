@@ -1,6 +1,6 @@
 {
   "name": "kodi-controller-cli",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Control Kodi from the command line",
   "main": "app.js",
   "bin": {
