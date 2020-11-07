@@ -35,8 +35,13 @@ program
 	.option('--toggle-fullscreen', 'Toggle the players full-screen mode')
 	.option('--toggle-mute', 'Toggle the players mute mode')
 	.option('--toggle-shuffle', 'Toggle the players shuffle mode')
+	.option('--repeat-off', 'Turn the players repeat mode off')
+	.option('--repeat-one', 'Turn the players repeat mode on for the current track')
+	.option('--repeat-all', 'Turn the players repeat mode on for all tracks')
+	.option('--shutdown', 'Shutdown kodi and the machine running it')
+	.option('--reboot', 'Reboot kodi and the machine')
 	.option('--volume-step <percent>', 'Set the volume to increase / decrease by', 5)
-	.option('--seek-speed <2|4|8|16|32>', 'Multiplier when using rewind / fast-fowards', '2')
+	.option('--seek-speed <2|4|8|16|32>', 'Multiplier when using rewind / fast-forwards', '2')
 	.option('--host <address>', 'Set the hostname to use')
 	.option('--port <port>', 'Set the port to use', 8080)
 	.option('--ping', 'State if the player is contactable')
@@ -91,6 +96,8 @@ return Promise.resolve()
 			'goBack', 'goHome', 'goNext', 'goPrevious',
 			'goUp', 'goDown', 'goLeft', 'goRight',
 			'toggleFullscreen', 'toggleMute', 'toggleShuffle',
+			'shutdown', 'restart', 'repeatOff', 'repeatOne',
+			'repeatAll',
 		].forEach(k => kodi.promises[k] = (...args) => new Promise((resolve, reject) =>
 			kodi[k].call(kodi, (err, val) => err ? reject(err) : resolve(val), ...args) // Callback is always first
 		))
@@ -131,6 +138,11 @@ return Promise.resolve()
 		program.toggleFullScreen && kodi.promises.toggleFullscreen(),
 		program.toggleMute && kodi.promises.toggleMute(),
 		program.toggleShuffle && kodi.promises.toggleShuffle(),
+		program.repeatOff && kodi.promises.repeatOff(),
+		program.repeatOne && kodi.promises.repeatOne(),
+		program.repeatAll && kodi.promises.repeatAll(),
+		program.shutdown && kodi.promises.shutdown(),
+		program.restart && kodi.promises.restart(),
 	]))
 	.then(()=> program.verbose && console.log('Done'))
 	.catch(e => {
