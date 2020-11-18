@@ -55,9 +55,14 @@ Options:
   --toggle-fullscreen         Toggle the players full-screen mode
   --toggle-mute               Toggle the players mute mode
   --toggle-shuffle            Toggle the players shuffle mode
+  --repeat-off                Turn the players repeat mode off
+	--repeat-one                Turn the players repeat mode on for the current track
+	--repeat-all                Turn the players repeat mode on for all tracks
+	--shutdown                  Shutdown kodi and the machine running it
+	--reboot                    Reboot kodi and the machine
   --volume-step <percent>     Set the volume to increase / decrease by
                               (default: 5)
-  --seek-speed <2|4|8|16|32>  Multiplier when using rewind / fast-fowards
+  --seek-speed <2|4|8|16|32>  Multiplier when using rewind / fast-forwards
                               (default: "2")
   --host <address>            Set the hostname to use
   --port <port>               Set the port to use (default: 8080)
